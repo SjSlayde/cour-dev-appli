@@ -31,6 +31,14 @@ class ContactRepository extends ServiceEntityRepository
 //        ;
 //    }
 
+   public function FindLast()
+   {
+    $stock = $this->findOneBy([], ['id' => 'DESC']);
+    return $stock;
+   }
+
+
+
 //    public function findOneBySomeField($value): ?Contact
 //    {
 //        return $this->createQueryBuilder('c')

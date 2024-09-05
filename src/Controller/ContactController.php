@@ -3,11 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Contact;
+use App\Repository\ContactRepository;
 use App\Form\ContactFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Service\MailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mailer\MailerInterface;
@@ -18,7 +20,7 @@ use Symfony\Component\Mime\Part\File;
 class ContactController extends AbstractController
 {
     #[Route('/contact', name: 'app_contact')]
-    public function index(Request $request, EntityManagerInterface $entityManager,MailerInterface $mailer): Response
+    public function index(Request $request, EntityManagerInterface $entityManager,MailerInterface $mailer,ContactRepository $contact,MailService $ms): Response
     {
         $form = $this->createForm(ContactFormType::class);
         $form->handleRequest($request);
@@ -35,22 +37,30 @@ class ContactController extends AbstractController
             $entityManager->persist($message);
             $entityManager->flush();
 
+            //envoi de mail avec notre service MailService
+            $email = $ms->sendMail('hello@example.com', $message->getEmail(), $message->getObjet(), $message->getMessage() );
+//            dd($message->getEmail());
 
-            // fonctionne pas 
-            $email = $message['email'];
-            $bodymessage = $message['message'];
-            $Objet = $message['objet'];
+            // $result = $contact->FindLast();
+
+            // $email = $result->getEmail();
+            // $bodymessage = $result->getMessage();
+            // $Objet = $result->getObjet();
 
 
-            $email = (new TemplatedEmail())
-            ->from('hello@example.com')
+            // $email = (new TemplatedEmail())
+            // ->from('hello@example.com')
+
 //            ->to('you@example.com')
-            ->to(new Address($email))
+
+            // ->to(new Address($email))
+
             //->cc('cc@example.com')
             //->bcc('bcc@example.com')
             //->replyTo('fabien@example.com')
             //->priority(Email::PRIORITY_HIGH)
-            ->subject($Objet)
+
+            // ->subject($Objet)
 
             // ->addPart((new DataPart(fopen('/assets/images/FXQErTuWIAMRakI.jpeg', 'r'), 'logo', 'image/png'))->asInline())
             // ->addPart((new DataPart(new File('/path/to/images/signature.gif'), 'footer-signature', 'image/gif'))->asInline())
@@ -62,20 +72,22 @@ class ContactController extends AbstractController
             // ->html('... <div background="cid:footer-signature"> ... </div> ...')
 
             // le chemin de la vue Twig à utiliser dans le mail
-            ->htmlTemplate('contact/signup.html.twig')
+
+            // ->htmlTemplate('contact/signup.html.twig')
 
             // un tableau de variable à passer à la vue; 
            //  on choisit le nom d'une variable pour la vue et on lui attribue une valeur (comme dans la fonction `render`) :
-            ->context([
-                    'expiration_date' => new \DateTime('+7 days'),
-                    'username' => 'foo',
-                    'message'=> $bodymessage,
-                ]);
 
-        $mailer->send($email);
+            // ->context([
+            //         'expiration_date' => new \DateTime('+7 days'),
+            //         'username' => 'foo',
+            //         'message'=> $bodymessage,
+            //     ]);
+
+        // $mailer->send($email);
 
             // Redirection vers accueil
-            return $this->redirectToRoute('app_accueil');
+        return $this->redirectToRoute('app_accueil');
         }
 
         return $this->render('contact/index.html.twig', [
