@@ -11,8 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Service\MailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Part\DataPart;
 use Symfony\Component\Mime\Part\File;
@@ -38,7 +38,7 @@ class ContactController extends AbstractController
             $entityManager->flush();
 
             //envoi de mail avec notre service MailService
-            $email = $ms->sendMail('hello@example.com', $message->getEmail(), $message->getObjet(), $message->getMessage() );
+            $ms->sendMail('hello@example.com', $message->getEmail(), $message->getObjet(), $message->getMessage() );  
 //            dd($message->getEmail());
 
             // $result = $contact->FindLast();
